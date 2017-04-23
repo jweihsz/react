@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="build/react.js"></script>
+    <script src="build/react-dom.js"></script>
+    <script src="build/browser.min.js"> </script>
+</head>
+
+<body>
+    
+    <table>
+        <tr>
+            <b style="color:red">this is example0</b>
+            <div id="example0"></div>
+            <script  type="text/babel">
+                ReactDOM.render(
+
+                    <h1>Hello,world</h1>,
+                    document.getElementById("example0")
+                );
+            </script>
+        </tr>
+        <br/>
+
+        <tr>
+            <b style="color:red">this is example1</b>
+            <div id="example1"></div>
+            <script  type="text/babel"> 
+                var names = ["alice","empty","Kate"];
+                ReactDOM.render(
+                    <div> 
+                        {
+                            names.map(function (name){
+                                return( <div>Hello,{name}</div>);
+                            })
+                        }
+                    </div>,
+                    document.getElementById("example1")
+                );
+            </script>
+        </tr>
+        <br/>
+
+        <tr>
+            <b style="color:red">this is example2</b>
+            <div id="example2"></div>
+            <script type="text/babel"> 
+
+                var arr = [
+
+                    <h1>Hello World</h1>,
+                    <h2>React is awesome</h2>
+                ];
+
+                ReactDOM.render(
+                    <div>{arr}</div>,
+                    document.getElementById("example2")
+                );
+            </script>
+        </tr>
+        <br/>
+
+        <tr>
+            <b style="color:red"> this is example3</b>
+            <div id="example3"></div>
+            <script type="text/babel"> 
+                var Hellomessage = React.createClass({
+
+                    render:function(){
+                        return (<h1>Hello {this.props.name}</h1>);
+                    }
+                });
+
+                ReactDOM.render(
+                    <Hellomessage  name="what"  />,
+                    document.getElementById("example3")
+                );
+            </script>
+        </tr>
+
+        <tr>
+            <b  style="color:red">this is example4</b>
+            <div id="example4"></div>
+            <script type="text/babel">
+                var Nodelist = React.createClass({
+
+                    render:function(){
+
+                        return(
+
+                            <ol>
+                            {
+                                React.Children.map(this.props.children,function(child){
+
+                                    return(<li>{child}</li>);
+
+                                })
+
+                            }   
+
+                            </ol>
+                        );
+                    }
+                });
+
+                ReactDOM.render(
+
+                    <Nodelist>
+                        <span>hello</span>
+                        <span>world</span>
+                    </Nodelist>,
+                    document.getElementById("example4")
+                );
+            </script>
+        </tr>
+    </table>
+</body>
+
+
+</html>
