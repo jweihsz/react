@@ -122,16 +122,27 @@
             <script type="text/babel">
                 
               var data = 123;
-
               var Mytitle = React.createClass({
-                propTypes: {
                 
+              getDefaultprops: function(){
+                    
+                    return {
+
+                        title: "hello world",
+
+                    };
+
+                },
+
+                propTypes: {
+
                   title: React.PropTypes.string.isRequired,
                 },
 
                 render: function() {
                   return <h1> this is {this.props.title} </h1>;
                 }
+
               });
 
               ReactDOM.render(
