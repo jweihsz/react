@@ -114,6 +114,37 @@
                 );
             </script>
         </tr>
+
+
+        <tr> 
+            <b style="color: red">this is example5</b>
+            <div id="example5"></div>
+            <script type="text/babel">
+                
+              var data = 123;
+
+              var Mytitle = React.createClass({
+                propTypes: {
+                
+                  title: React.PropTypes.string.isRequired,
+                },
+
+                render: function() {
+                  return <h1> this is {this.props.title} </h1>;
+                }
+              });
+
+              ReactDOM.render(
+
+                <Mytitle title={data} />,
+                document.getElementById("example5")
+              );
+
+            </script>
+
+        </tr>
+
+
     </table>
 </body>
 
