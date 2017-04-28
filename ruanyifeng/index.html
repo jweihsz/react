@@ -5,6 +5,7 @@
     <script src="build/react.js"></script>
     <script src="build/react-dom.js"></script>
     <script src="build/browser.min.js"> </script>
+	<script scr="build/jquery.min.js"></script>
 </head>
 
 <body>
@@ -285,8 +286,146 @@
 		</tr>
 		
 		
-
-
+		
+		<tr>
+			<b style="color:red">this is example9 </b>
+			<div id="example9"></div>
+			
+			<script  type="text/babel">
+				
+				var Hello = React.createClass({
+				
+					getInitialState:function(){
+						
+						return ({
+						
+							opacity:1.0
+						
+						});
+					},
+					
+					componentDidMount: function(){
+						
+						this.timer = setInterval(function(){
+							
+							var opacity = this.state.opacity;
+							opacity -= 0.05;
+							
+							if(opacity < 0.1){
+								
+								opacity = 1.0;
+							
+							}
+							this.setState({
+								
+								opacity:opacity
+							
+							});
+						}.bind(this),100);
+					
+					},
+					
+					render:function(){
+					
+						return(
+						
+							<div style={{opacity:this.state.opacity}}>
+								Hello {this.props.name}
+							
+							</div>
+						
+						);
+					
+					}
+				
+				});
+				
+				
+				ReactDOM.render(
+					
+					<Hello name="hello world"   />,
+					document.getElementById("example9")
+					
+				);
+			
+			</script>
+		</tr>
+		
+		
+		<tr>
+			<b style="color:red">this is example10</b>
+			<div id="example10"> </div>
+			
+			
+			<script  type="text/babel">  
+				
+				var UserGist =  React.createClass({
+				
+					getInitialState:function(){
+					
+						return{
+						
+							username: "",
+							lastGistUrl: ""
+						};
+					
+					},
+					
+					componentDidMount:function(){
+					
+						$.get(this.props.source,function(result){
+							
+							var lasrGist = result[0];
+							
+							if(this.isMounted()){
+								
+								this.setState({
+								
+									username:lasrGist.owner.login,
+									lastGistUrl:lasrGist.html_url
+								
+								
+								});
+							}
+						}.bind(this));
+					
+					},
+					
+					render:function(){
+						
+						return(
+							
+							<div>
+								
+								{this.state.username}'s last git is <a href={this.state.lastGistUrl}>here</a>
+							
+							
+							</div>
+						
+						
+						);
+						
+					
+					}
+				
+				});
+				
+				
+				ReactDOM.render(
+				
+					<UserGist source="https://api.github.com/users/octocat/gists" />,
+					
+					document.getElementById("example10")
+				
+				
+				);
+			
+			
+			</script>
+		
+		</tr>
+		
+	
     </table>
 </body>
 
