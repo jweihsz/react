@@ -154,10 +154,112 @@
             </script>
 
         </tr>
+		
+		
+		<tr> 
+			<b style="color:red">this is example6</b>
+			<div id="example6"></div>
+			<script type="text/babel">
+				
+				var  Mycomment = React.createClass({
+				
+					handleClick:function(){
+						
+						this.refs.myTextInput.focus();
+					},
+					render:function(){
+					
+						return(
+						
+							<div>
+								<input type="text" ref="myTextInput" />
+								<input  type="button" value="Focus the text input" onClick={this.handleClick}  />
+							</div>
+						);
+					}
+				
+				});
+				
+				ReactDOM.render(
+				
+					<Mycomment  />,
+					document.getElementById("example6")
+					
+					
+				);
+		
+			</script>
+		
+		</tr>
+		
+		
+		<tr> 
+			<b  style="color:red">this is example7</b>
+			<div id="example7"> </div>
+			<script  type="text/babel"> 
+				
+				var LikeButton = React.createClass({
+				
+					getInitialState:function(){
+					
+						return {liked:false};
+					
+					},
+					
+					handleClick:function(event){
+						
+						this.setState({liked:!this.state.liked});
+					
+					},
+					
+					render:function(){
+						
+						var text  = this.state.liked  ? "like" : "have not liked";
+						return(
+						
+							<p onClick={this.handleClick}>  
+							
+								You {text} this. Click to toggle.
+							</p>
+						
+						);
+					}
+				});
+				
+				
+				ReactDOM.render(
+				
+					<LikeButton  />,
+					document.getElementById("example7")
+				);
+			</script>
+		
+		</tr>
+		
+		
 
 
     </table>
 </body>
 
 
+
+
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
