@@ -237,6 +237,54 @@
 		</tr>
 		
 		
+		
+		<tr>
+			<b style="color:red">this is example8</b>
+			<div id="example8"></div>
+			<script  type="text/babel">  
+			
+				var  Imput = React.createClass({
+				
+					getInitialState:function(){
+						
+						return {value: "hello"};
+					
+					},
+					
+					handleChange:function(event){
+					
+						this.setState({value:event.target.value});
+
+					},
+				
+					
+					render:function(){
+						
+						var value = this.state.value;
+						return(
+						
+							<div>
+								<input type="text" value={value} onChange={this.handleChange}  />
+								<p>{value}</p>
+							</div>
+							
+						);
+					}
+				
+				});
+				
+				ReactDOM.render(
+				
+					<Imput />,
+					document.getElementById("example8")
+
+				);
+				
+			</script>
+			
+		</tr>
+		
+		
 
 
     </table>
