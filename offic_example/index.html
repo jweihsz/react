@@ -142,17 +142,41 @@
 					);
 				}
 			});
+
+			var Commentmarkdown = React.createClass({
+				
+				rawMarkup:function(){
+					var md = new Remarkable();
+					var rawMarkup = md.render(this.props.children.toString());
+					return {__html:rawMarkup};
+
+
+				},
+
+				render:function(){
+
+					return (
+
+						<div className="comment">
+							<h2 className="commentAuthor">
+								{this.props.author}
+							</h2>
+							<span dangerous={this.rawMarkup()} />
+						</div>
+					);
+				}
+			});
 			
 			var CommentList =  React.createClass({
-				
+
 				render:function(){
-				
-					
+
 					return(
-					
+
 						<div className="commentlist">
 							<Comment author="peter hunt">This is one comment </Comment>
 							<Comment author="Jordan Walk">This is another comment </Comment>
+							<Commentmarkdown author="Jordan Walk">This is third comment </Commentmarkdown>
 						
 						</div>
 					
