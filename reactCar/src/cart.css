@@ -1,0 +1,29 @@
+.Cart {
+
+}
+
+.Cart-logo {
+  animation: Cart-logo-spin infinite 20s linear;
+  height: 80px;
+}
+
+.Cart-header {
+  background-color: #222;
+  padding: 20px;
+  color: white;
+	text-align: center;
+}
+
+.Cart-intro {
+  font-size: large;
+}
+
+@keyframes Cart-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.media-left, .media>.pull-left {
+  margin-right: 10px;
+	padding-right: 4px;
+}

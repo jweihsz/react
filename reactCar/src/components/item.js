@@ -10,13 +10,13 @@ export default class Item extends Component{
 		super(props);
 		this.state = {
 
-			itemTotal:0,
+			itemTotal:this.props.quantity * this.props.price,
 		};
 	}
 
 	getInitialState(){
 
-		this,setState({itemTotal:this.props.quantity * this.props.price});
+		this.setState({itemTotal:this.props.quantity * this.props.price});
 	}
 
 	componentWillUnmount(){
@@ -44,9 +44,8 @@ export default class Item extends Component{
 							<p className="media-heading">by <a href="#">{this.props.brand}</a></p>
 						</div>
 					</div> 
-
 				</td>
-
+				
 				<td className="col-sm-1 col-md-1"> 
 					<input  type="number" className="form-control"  min="1"  max={this.props.limit} 
 					value={this.props.quantity} onChange={this.handleChange.bind(this, this.props.id)}   />

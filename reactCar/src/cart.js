@@ -1,8 +1,9 @@
 import React, {Component} from     "react";
 import List from "./components/list";
 import items from "./items";
+import _ from 'underscore';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
-import  "./Cart.css";
+import  "./cart.css";
 
 
 export default   class Cart extends  Component{
@@ -15,7 +16,7 @@ export default   class Cart extends  Component{
 			items:items,
 			qtyTotal:0,
 			priceTotal:0,
-			subTotal:100,
+			subTotal:0,
 			tax:0.10,
 			grandTotal:0
 		};
@@ -23,16 +24,13 @@ export default   class Cart extends  Component{
 
 	handleSubTotal = (itemTotal=0) =>{
 
-
-		let itemTotal = 0;
 		_.each(this.state.items,function(item){
 
 			itemTotal +=  item.price * item.quantity;
 		});
-		
-
-		this.setState({subTotal:itemTotal});
+		this.setState({ subTotal: itemTotal });
 		this.handleGrandTotal(itemTotal);
+
 	}
 
 	componentDidMount(){
@@ -49,12 +47,11 @@ export default   class Cart extends  Component{
 		this.setState({priceTotal:this.state.priceTotal + item.price});
 		this.handleSubTotal();
 
-
 	}
 
 	removeItem(itemID){
 
-		let items = _.without(this.state.items,_.findWhere(this.state.items,{id:itemId}));
+		let items = _.without(this.state.items,_.findWhere(this.state.items,{id:itemID}));
 		this.setState({items:items});
 		this.handleSubTotal();
 	}
@@ -96,11 +93,6 @@ export default   class Cart extends  Component{
 										changeQty = {this.changeQty.bind(this)}
 										handleSubTotal={this.handleSubTotal.bind(this)}
 									/>
-
-
-									<td></td>
-									<td> </td>
-									<div>just a test</div>
 
 									<tfoot>
 										<tr>
