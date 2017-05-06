@@ -43,6 +43,7 @@ function init_env_params(){
 
 	let hash_array = [];
 	let action_array = new Array();
+	let status_array = new Array();
 
 	let count = 1;
 	let map_num = 0;
@@ -68,14 +69,67 @@ function init_env_params(){
 		}
 	}
 
+	for(let i=0;i<G_TABLE_ROW; ++i){
+
+			status_array[i] = new Array();
+
+		for(let j=0;j<G_TABLE_COL;++j){
+
+			status_array[i][j] = G_CAN_N;
+		}
+
+	}
+
 	return({
 
 		hash_map: hash_array,
 		action_array:action_array,
+		status_array:status_array,
 		test_value:100,
 	});
 }
 
+
+
+
+function  new_cell_status(param_obj=null,can_nums=20){
+
+	if(!param_obj){
+
+		return(-1);
+	}
+	let x_pos = -1;
+	let y_pos = -1;
+	let count_can = 0;
+
+	while(count_can < can_nums){
+
+		x_pos = Math.round(Math.random()*(G_TABLE_ROW-1)+0);
+		y_pos = Math.round(Math.random()*(G_TABLE_COL-1)+0);
+
+		if((x_pos < G_TABLE_ROW) && (y_pos < G_TABLE_COL)){
+
+			if(G_CAN_N == param_obj.status_array[x_pos][y_pos]){
+
+				param_obj.status_array[x_pos][y_pos] = 	G_CAN_Y;
+				count_can += 1;	
+			}
+		} 
+	}
+}
+
+
+
+
+function  get_cell_status(param_obj=null,x_pos,y_pos){
+
+	if(!param_obj || x_pos>(G_TABLE_ROW-1) || y_pos>(G_TABLE_COL-1)){
+
+		return(G_CAN_N);
+	}
+
+	return(param_obj.status_array[x_pos][y_pos]);
+}
 
 
 
@@ -98,27 +152,22 @@ function new_action_array(param_obj=null){
 }
 
 
-class  FloorNode extends Component{
-
-
+class  CellNode extends Component{
 
 	render(){
-		let textColor = "#CC0000";
-		let items = [];
-		for(let i=0;i<G_TABLE_ROW; ++i){
+		
+		let class_name = this.props.has_can=="yes" ? ("glyphicon glyphicon-flag") : ("glyphicon glyphicon-star-empty");
+		let textColor=undefined;
+		if(this.props.has_can=="yes"){
 
-			items.push(
-
-				<td>
-					<button  type="button" className="btn btn-default btn-lg">
-						<span className="glyphicon glyphicon-star-empty" style={{color: textColor}}></span>
-					</button>
-				</td>
-
-			);
-
+			textColor = "#CC0000";
 		}
-		return(<tr>{items}</tr>);	
+		return(
+
+			<button  type="button" className="btn btn-default btn-lg">
+				<span className={class_name}  style={{color:textColor}}></span>
+			</button>
+		);	
 	}
 }
 
@@ -139,11 +188,23 @@ class  FloorDraw  extends Component{
 			let one_value = test_obj.action_array[2][2];
 			let two_value = test_obj.test_value;
 
+			let init_param = init_env_params();
+			new_cell_status(init_param,21);
 
 
 			let items = [];
-			for(let i=0;i<G_TABLE_COL;++i){
-				items.push(<FloorNode />);
+			for(let i=0; i<G_TABLE_COL; ++i){
+
+				for(let j=0;j <G_TABLE_ROW; ++j){
+
+					if(G_CAN_N == get_cell_status(init_param,i,j)){
+
+						items.push(<td><CellNode  has_can="no" /></td>);
+					}else{
+						items.push(<td><CellNode  has_can="yes" /></td>);
+					}
+				}
+				items.push(<tr></tr>);
 			}
 
 				
