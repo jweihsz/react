@@ -12,6 +12,7 @@ const  G_TABLE_COL=10;
 const  G_CAN_N = 0;
 const  G_CAN_Y = 1;
 const  G_CAN_W = 2;
+const  G_ROBOT_S=3;
 
 const  G_UP_WALK=0;
 const  G_DOWN_WALK=1;
@@ -44,9 +45,21 @@ class  CellNode extends Component{
 
 	render(){
 		
-		let class_name = this.props.has_can=="yes" ? ("glyphicon glyphicon-flag") : ("glyphicon glyphicon-star-empty");
+		let class_name;
+		if("robot" === this.props.class_type){
+
+			class_name = "glyphicon glyphicon-plane"; 
+
+		}else if("has_can" === this.props.class_type){
+
+			class_name = "glyphicon glyphicon-flag"; 	
+		}else{
+
+			class_name = "glyphicon glyphicon-star-empty "; 	
+		}
+
 		let textColor=undefined;
-		if(this.props.has_can=="yes"){
+		if(this.props.class_type=="has_can"){
 
 			textColor = "#CC0000";
 		}
@@ -72,18 +85,50 @@ class  FloorDraw  extends Component{
 				pos:{up:0,down:0,left:0,right:0,center:0},
 				hash_map: null,
 				action_array:null,
+				action_score:null,
 				status_array:null,
+				ui_status:null,
+				flag_array:null,
+				cur_index:0,
+				cur_x:0,
+				cur_y:0,
+				cur_action:"G_WAIT_WALK",
 				test_value:100,
+				opacity:0,
+
 
 			};
 		}
 
 
+
+		reset_action_score(){
+
+			let action_score = new Array();
+
+			for(let i=0;i<G_SAMPLE_ARRAYS;++i){
+				action_score[i] = 0;
+			}
+			this.state.action_score = action_score;
+		}
+
+
+		set_action_score(index,value){
+
+			if((index>G_SAMPLE_ARRAYS-1)  || index< 0)return(-1);
+
+			this.state.action_score[index] += value;
+		}
+
+
 		init_env_params(){
 
-			let hash_array = [];
+			let hash_array = new Array();
 			let action_array = new Array();
 			let status_array = new Array();
+			let ui_array = new Array();
+			let flag_array = new Array();
+			
 
 			let count = 1;
 			let map_num = 0;
@@ -112,19 +157,54 @@ class  FloorDraw  extends Component{
 			for(let i=0;i<G_TABLE_ROW; ++i){
 
 					status_array[i] = new Array();
+					ui_array[i] = new Array();
 
 				for(let j=0;j<G_TABLE_COL;++j){
 
 					status_array[i][j] = G_CAN_N;
+					ui_array[i][j] = G_CAN_N;
 				}
 
 			}
 
+			for(let i=0;i<G_TABLE_ROW; ++i){
+
+					flag_array[i] = new Array();
+
+				for(let j=0;j<G_TABLE_COL;++j){
+
+					flag_array[i][j] = 1;
+				}
+
+			}
+
+
 			this.state.hash_map=hash_array;
 			this.state.action_array=action_array;
 			this.state.status_array=status_array;
-			
+			this.state.ui_array=ui_array;
+			this.state.flag_array=flag_array;
+			this.state.cur_index = 0;
+			this.reset_action_score();
+
 		}
+
+
+
+		flag_array_config(xpos,ypos,flag){
+
+
+			this.state.flag_array[xpos][ypos] = flag;
+
+		}
+
+
+		flag_array_get(xpos,ypos){
+
+
+			return(this.state.flag_array[xpos][ypos]);
+		}
+
 
 
 		new_cell_status(can_nums=20){
@@ -164,22 +244,42 @@ class  FloorDraw  extends Component{
 				} 
 			}
 			this.state.status_array=new_array;
+
+			for(let i=0;i<G_TABLE_ROW; ++i){
+
+				for(let j=0;j<G_TABLE_COL;++j){
+
+					this.state.ui_array[i][j] = new_array[i][j];
+				}
+
+			}
+
+
 		}
 
 
 		get_cell_around(x_pos,y_pos){
 
 			
-			let up_value = -1;
-			let down_value = -1;
-			let left_value = -1;
-			let right_value = -1;
-			let center_value = -1;
+			let up_value = G_CAN_N;
+			let down_value = G_CAN_N;
+			let left_value = G_CAN_N;
+			let right_value = G_CAN_N;
+			let center_value = G_CAN_N;
 
 
 			if(x_pos>(G_TABLE_ROW-1) || y_pos>(G_TABLE_COL-1)){
 
-				return(null);
+				return(
+
+					{
+						up:up_value,
+						down:down_value,
+						left:left_value,
+						right:right_value,
+						center:center_value,
+					}
+				);
 			}
 
 			if(y_pos == G_TABLE_COL-1){
@@ -241,6 +341,30 @@ class  FloorDraw  extends Component{
 			return(this.state.status_array[x_pos][y_pos]);
 		}
 
+		set_cell_status(x_pos,y_pos,value){
+
+			this.state.status_array[x_pos][y_pos] = value;
+
+		}
+
+
+		set_ui_status(x_pos,y_pos,value){
+
+			this.state.ui_array[x_pos][y_pos] = value;
+
+		}
+
+		get_ui_status(x_pos,y_pos){
+
+			if(x_pos>(G_TABLE_ROW-1) || y_pos>(G_TABLE_COL-1)){
+
+				return(G_CAN_N);
+			}
+
+			return(this.state.ui_array[x_pos][y_pos]);
+		}
+
+
 
 		new_action_array(){
 
@@ -256,19 +380,222 @@ class  FloorDraw  extends Component{
 			return(0);
 		}
 
-		componentWillMount(){
-
-
-			this.init_env_params();
-			this.new_cell_status(21);
-
-		}
-
 		handle_click(xpos,ypos){
 
 			let obj = this.get_cell_around(xpos,ypos);
 			this.setState({pos:obj});
 		}
+
+
+		robot_run(){
+
+
+			let obj = this.get_cell_around(this.state.cur_x,this.state.cur_y);
+			let map_value = count_map_num(obj.up,obj.down,obj.left,obj.right,obj.center);
+			let real_value = this.state.hash_map[ map_value + ""];
+			let action = this.state.action_array[0][real_value];
+			let new_x = this.state.cur_x;
+			let new_y = this.state.cur_y;
+
+			if(G_RANDOM_WALK == action){
+
+				let new_action = G_RANDOM_WALK;
+				do{
+
+					new_action = yield_random_action();
+				}while(G_RANDOM_WALK == new_action);
+
+				action = new_action;
+			}
+
+
+			if(G_UP_WALK == action){
+
+				this.state.cur_action = "G_UP_WALK";
+
+				if(0 == new_x){
+
+
+				}else{
+
+					new_x -=1;	
+				}
+				
+
+			}else if(G_DOWN_WALK == action){
+
+				this.state.cur_action = "G_DOWN_WALK";
+				if(G_TABLE_ROW-1 == new_x){
+
+
+				}else{
+
+					new_x +=1;
+
+				}
+				
+			}else if(G_LEFT_WALK == action){
+
+				this.state.cur_action = "G_LEFT_WALK";
+
+				if(0 == new_y){
+
+
+				}else{
+
+					new_y -= 1;	
+				}
+				
+
+			}else if(G_RIGHT_WALK == action){
+
+				this.state.cur_action = "G_RIGHT_WALK";
+				if(G_TABLE_COL-1 == new_y){
+
+
+				}else{
+
+					new_y += 1;	
+				}
+
+			}else if(G_WAIT_WALK == action){
+
+				this.state.cur_action = "G_WAIT_WALK";
+
+			}else if(G_COLLECT_CAN == action){
+
+				this.state.cur_action = "G_COLLECT_CAN";
+
+			}
+
+			//this.flag_array_config(new_x,new_y,1);
+			//this.set_cell_status(new_x,new_y,G_ROBOT_S);
+			this.setState({cur_x:new_x,cur_y:new_y});
+
+
+
+		}
+
+
+		componentWillMount(){
+
+
+			this.init_env_params();
+			this.new_cell_status(21);
+			this.new_action_array();
+
+		}
+
+		
+		
+		componentDidMount(){
+
+		
+			    setInterval(function () {
+					
+					let new_x=this.state.cur_x;
+					let new_y = this.state.cur_y;
+					let obj = this.get_cell_around(this.state.cur_x,this.state.cur_y);
+					let map_value = count_map_num(obj.up,obj.down,obj.left,obj.right,obj.center);
+					let real_value = this.state.hash_map[ map_value + ""];
+					let	action = this.state.action_array[this.state.cur_index][real_value];
+
+
+					let new_action_dec = null;
+					if(G_RANDOM_WALK == action){
+
+						let new_action = G_RANDOM_WALK;
+						do{
+
+							new_action = yield_random_action();
+						}while(G_RANDOM_WALK == new_action);
+
+						action = new_action;
+					}
+
+					
+
+					if(G_UP_WALK == action){
+
+						new_action_dec = "G_UP_WALK";
+
+						if(0 == new_x){
+
+							this.state.action_score[this.state.cur_index] -= 5;
+
+						}else{
+
+							new_x -= 1;	
+						}
+						
+
+					}else if(G_DOWN_WALK == action){
+
+						new_action_dec = "G_DOWN_WALK";
+						if(G_TABLE_ROW-1 == new_x){
+
+							this.state.action_score[this.state.cur_index] -= 5;
+
+						}else{
+
+							new_x +=1;
+
+						}
+						
+					}else if(G_LEFT_WALK == action){
+
+						new_action_dec = "G_LEFT_WALK";
+
+						if(0 == new_y){
+
+							this.state.action_score[this.state.cur_index] -= 5;
+
+						}else{
+
+							new_y -= 1;	
+						}
+						
+
+					}else if(G_RIGHT_WALK == action){
+
+						new_action_dec = "G_RIGHT_WALK";
+						if(G_TABLE_COL-1 == new_y){
+
+							this.state.action_score[this.state.cur_index] -= 5;
+
+						}else{
+
+							new_y += 1;	
+						}
+
+					}else if(G_WAIT_WALK == action){
+
+						new_action_dec = "G_WAIT_WALK";
+
+					}else if(G_COLLECT_CAN == action){
+
+						new_action_dec = "G_COLLECT_CAN";
+						if(G_CAN_Y == obj.center){
+
+							this.state.action_score[this.state.cur_index] += 10;
+							this.set_cell_status(new_x,new_y,G_CAN_N);
+
+
+						}else{
+
+							this.state.action_score[this.state.cur_index] -= 1;
+						}
+
+					}
+					
+					this.set_ui_status(new_x,new_y,G_ROBOT_S);
+					this.state.cur_x = new_x;
+					this.state.cur_y = new_y;
+					this.setState({cur_action:real_value, test_value:yield_random_action()});
+					
+			    }.bind(this), 300);
+		}
+
 
 
 		render(){
@@ -293,24 +620,38 @@ class  FloorDraw  extends Component{
 
 				for(let j=0;j <G_TABLE_ROW; ++j){
 
-					if(G_CAN_N == this.get_cell_status(i,j)){
+				//	if(!this.flag_array_get(i,j))continue;
+
+				//	this.flag_array_config(i,j,0);
+
+					let status = this.get_ui_status(i,j);
+
+					if(G_CAN_N == status){
 
 						items.push(<td><CellNode  
-										has_can="no"  
+										class_type="no_can"  
 										x_pos={i} 
 										y_pos={j}  
 										onClick={(xpos,ypos) =>this.handle_click(xpos,ypos)} />
 									</td>);
 					
-					}else{
+					}else if(G_ROBOT_S == status){
 
 						items.push(<td><CellNode  
-										has_can="yes" 
+										class_type="robot"  
+										x_pos={i} 
+										y_pos={j}  
+										onClick={(xpos,ypos) =>this.handle_click(xpos,ypos)} />
+									</td>);	
+					}
+					else{
+
+						items.push(<td><CellNode  
+										class_type="has_can" 
 										x_pos={i} 
 										y_pos={j}  
 										onClick={(xpos,ypos) =>this.handle_click(xpos,ypos)} />
 									</td>);
-					
 					}
 				}
 				items.push(<tr></tr>);
@@ -339,6 +680,16 @@ class  FloorDraw  extends Component{
 						left:{this.state.pos.left} <br/>
 						right:{this.state.pos.right} <br/>
 						center:{this.state.pos.center} <br/>
+					 </div>
+
+					 <div >
+						cur_x:{this.state.cur_x}<br/>
+						cur_y:{this.state.cur_y}<br/>
+						cur_action:{this.state.cur_action}<br/>
+					 </div>
+
+					 <div>
+						test_value:{this.state.test_value}<br/>
 					 </div>
 
 				</div>
