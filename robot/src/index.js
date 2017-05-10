@@ -90,6 +90,8 @@ class  FloorDraw  extends Component{
 				ui_status:null,
 				flag_array:null,
 				cur_index:0,
+				cur_steps:0,
+				cur_times:0,
 				cur_x:0,
 				cur_y:0,
 				cur_action:"G_WAIT_WALK",
@@ -387,6 +389,7 @@ class  FloorDraw  extends Component{
 		}
 
 
+	
 		robot_run(){
 
 
@@ -476,7 +479,7 @@ class  FloorDraw  extends Component{
 
 		}
 
-
+	
 		componentWillMount(){
 
 
@@ -487,19 +490,51 @@ class  FloorDraw  extends Component{
 		}
 
 		
+		componentDidUpdate(){
 		
+			
+		
+		}
+
+
 		componentDidMount(){
 
 		
 			    setInterval(function () {
 					
+					
+					if(100 == this.state.cur_steps){
+
+
+						this.state.cur_steps = 0;
+						this.state.cur_x = 0;
+						this.state.cur_y = 0;
+						this.new_cell_status(21);
+						this.state.cur_times += 1;
+
+						if(100 == this.state.cur_times){
+
+							this.state.cur_times = 0;
+
+							if(this.state.cur_index < G_SAMPLE_ARRAYS-1){
+
+								this.state.cur_index += 1;
+
+							}
+							
+
+						}
+
+
+					}
+
+
 					let new_x=this.state.cur_x;
 					let new_y = this.state.cur_y;
 					let obj = this.get_cell_around(this.state.cur_x,this.state.cur_y);
 					let map_value = count_map_num(obj.up,obj.down,obj.left,obj.right,obj.center);
 					let real_value = this.state.hash_map[ map_value + ""];
 					let	action = this.state.action_array[this.state.cur_index][real_value];
-
 
 					let new_action_dec = null;
 					if(G_RANDOM_WALK == action){
@@ -591,9 +626,12 @@ class  FloorDraw  extends Component{
 					this.set_ui_status(new_x,new_y,G_ROBOT_S);
 					this.state.cur_x = new_x;
 					this.state.cur_y = new_y;
-					this.setState({cur_action:real_value, test_value:yield_random_action()});
+
+					let count_times = this.state.cur_steps + 1;
+					this.setState({cur_action:new_action_dec, cur_steps:count_times});
 					
-			    }.bind(this), 300);
+		
+			    }.bind(this), 1);
 		}
 
 
@@ -601,19 +639,6 @@ class  FloorDraw  extends Component{
 		render(){
 			
 			
-			//let test_obj = null;
-			//test_obj = init_env_params();
-			//let node = count_map_num(2,2,2,2,2);
-			//let value_ret = test_obj.hash_map[node+""];
-			
-		
-			//let test_random = new_action_array(test_obj);
-			//let one_value = test_obj.action_array[2][2];
-			//let two_value = test_obj.test_value;
-
-			//this.state.init_param = init_env_params();
-			//new_cell_status(this.state.init_param,21);
-
 
 			let items = [];
 			for(let i=0; i<G_TABLE_COL; ++i){
@@ -666,31 +691,46 @@ class  FloorDraw  extends Component{
 						<p>just a test</p>
 					</div>
 					
-					{items}
-					
-					<br />
-					<br />
-					<br />
 
-					<b>the value is </b>
+					<table>
+						
+						<tr> 
+							
+							<td>
+								{items}
+							</td>
+							
+							<td  width="10px">    </td>
+							<td>   </td>
+							<td>    </td>
 
-					<div>
-						up:{this.state.pos.up} <br/>
-						down:{this.state.pos.down} <br/>
-						left:{this.state.pos.left} <br/>
-						right:{this.state.pos.right} <br/>
-						center:{this.state.pos.center} <br/>
-					 </div>
+							<td>
+								<div>
+									up:{this.state.pos.up} <br/>
+									down:{this.state.pos.down} <br/>
+									left:{this.state.pos.left} <br/>
+									right:{this.state.pos.right} <br/>
+									center:{this.state.pos.center} <br/>
+								 </div>
 
-					 <div >
-						cur_x:{this.state.cur_x}<br/>
-						cur_y:{this.state.cur_y}<br/>
-						cur_action:{this.state.cur_action}<br/>
-					 </div>
+								 <div >
+									cur_action:{this.state.cur_action} <br/>
+									cur_x:{this.state.cur_x}<br/>
+									cur_y:{this.state.cur_y}<br/>
+									action_index:{this.state.cur_index}<br/>
+									action_steps:{this.state.cur_steps}<br/>
+									action_score:{ this.state.action_score[this.state.cur_index] }<br/>
+									action_times:{this.state.cur_times}<br/>
+								
+									
+								 </div>
+							</td>
+						
+						</tr>
 
-					 <div>
-						test_value:{this.state.test_value}<br/>
-					 </div>
+					</table>
+
+
 
 				</div>
 			);
